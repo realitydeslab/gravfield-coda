@@ -1,4 +1,4 @@
 module.exports = {
-  default: 'basic',
+  default: 'unity',
   projects: [],
 };
