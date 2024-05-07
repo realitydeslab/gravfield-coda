@@ -42,26 +42,30 @@ const udpPort = new osc.UDPPort({
 });
 
 const message = {
-  position: [0, 0, 0],
+  pos: [0, 0, 0],
 };
 
 let streaming = false;
 udpPort.on('message', (oscMsg) => {
-  const performerId = oscMsg.address.split('/')[1];
   if (!streaming) {
-    console.log('UDP Server Started at Port', udpPort.localPort);
+    console.log('UDP Server Start Streaming on Port', udpPort.localPort);
     streaming = true;
   }
-  message.id = performerId;
-  message.position[0] = oscMsg.args[0].value;
-  message.position[1] = oscMsg.args[1].value;
-  message.position[2] = oscMsg.args[2].value;
-  console.log(message);
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(message));
-    }
-  });
+  if(oscMsg.address.includes("/performer"))
+  {
+    // const performerId = oscMsg.address.split('/')[1];
+    const performerId = oscMsg.address.slice(-1);
+    message.id = performerId;
+    message.pos[0] = oscMsg.args[0].value;
+    message.pos[1] = oscMsg.args[1].value;
+    message.pos[2] = oscMsg.args[2].value;
+    // console.log(message);
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(message));
+      }
+    });
+  }
 });
 
 // Open the socket.
@@ -87,6 +91,7 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     console.log('onmessage', message);
     const m = JSON.parse(message);
+    console.log(m.type);
     if (m.type === 'connect') {
       try {
         if (thisId) delete clients[thisId];
@@ -112,6 +117,30 @@ wss.on('connection', (ws) => {
           client.send(message);
         }
       });
+    }
+    else if(m.type === 'osc')
+    {
+      udpPort.send({
+        address: "/type",
+        args: [
+            {
+                type: "s",
+                value: "default"
+            },
+            {
+                type: "i",
+                value: m.value1
+            },
+            {
+              type: "i",
+              value: m.value2
+            },
+            {
+              type: "i",
+              value: m.mode
+            }
+        ]
+    }, "127.0.0.1", 13600);
     }
   });
   ws.on('close', () => {

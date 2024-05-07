@@ -5,7 +5,7 @@ import myo_ from './myo';
 import devicemotion_ from './devicemotion';
 import smartphone_ from './smartphone';
 import riot_ from './riot';
-import {rxosc as rxosc_, txosc as txosc_}from './unity';
+import {performer as performer_, sendosc as sendosc_}from './unity';
 
 function streamifyFinger(f) {
   return {
@@ -95,21 +95,19 @@ export function riot(name) {
   };
 }
 
-export function rxosc(name) {
-  const sm = rxosc_(name);
+export function performer(name) {
+  const sm = performer_(name);
   
   // return new Stream(withAttr({
   //   type: 'position',
   //   format: 'vector',
   //   size: 3,
   // })([sm.position[0], sm.position[1], sm.position[2]]));
-  return new Stream(sm);
+  return {
+    pos:new Stream(sm.pos),
+  };
 }
 
-export function txosc(name) {
-  const sm = txosc_(name);
-  console.log("txosc2");
-  return {
-    
-  };
+export function sendosc(msg) {
+  const sm = sendosc_(msg);
 }

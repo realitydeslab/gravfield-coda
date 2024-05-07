@@ -1,7 +1,26 @@
 import { currentTime } from '@most/scheduler';
 import { sample, periodic } from '@coda/core';
 
-const callbacks = {};
+// const performers = [
+//   {
+//     id:"A",
+//     pos:[0,0,0]
+//   },
+//   {
+//     id:"B",
+//     pos:[0,0,0]
+//   },
+//   {
+//     id:"C",
+//     pos:[0,0,0]
+//   }
+// ];
+
+const performers = {
+  A:{},
+  B:{},
+  C:{}
+}
 
 /**
  * Try to propagate an event or propagate an error to the stream
@@ -26,79 +45,70 @@ function createStream(id, channel, size) {
       samplerate: 100,
     },
     run(sink, scheduler) {
-      callbacks[id][channel] = (m) => {
+      performers[id][channel] = (m) => {
         if (Object.keys(m).includes(channel)) {
           tryEvent(currentTime(scheduler), m[channel], sink);
         }
       };
       return {
         dispose() {
-          delete callbacks[id][channel];
+          delete performers[id][channel];
         },
       };
     },
   };
 }
 
-/**
- * Stream data from a connected R-IoT.
- *
- * This operator returns a data structure including the following streams:
- * - `acc`: acceleration
- * - `gyro`: gyroscopes (rotation rates)
- * - `quat`: quaternions (orientation)
- * - `euler`: euler angles (orientation)
- * - `magneto`: magnetometers
- *
- * @param {Number} id RIOT Device ID
- * @return {Object} data structure including the following streams:
- * - `acc`: acceleration
- * - `gyro`: gyroscopes (rotation rates)
- * - `quat`: quaternions (orientation)
- * - `euler`: euler angles (orientation)
- * - `magneto`: magnetometers
- *
- * @example
- * sm = riot();
- *
- * s1 = sm.acc
- *   .plot({ legend: 'Acceleration' });
- * s2 = sm.gyro
- *   .plot({ legend: 'Gyroscopes' });
- */
-export const rxosc = function(id = 0) {
-//   if (window.location.hostname !== 'localhost') {
-//     throw new Error('The `riot` operator is only available locally');
-//   }
-  const host = 'ws://localhost:9090';
-  const socket = new WebSocket(host);
-  socket.onerror = () => {
-    // eslint-disable-next-line no-console
-    console.error('[rxosc] Error: the websocket server is unavailable at', host);
-  };
-  socket.onclose = () => {
-    // eslint-disable-next-line no-console
-    console.error('[rxosc] Error: lost connection with the websocket server');
-  };
-  socket.onmessage = (json) => {
-    const m = JSON.parse(json.data);
-    // console.log(json.data);
-    if (m.id !== `${id}`) return;
-    Object.values(callbacks[id]).forEach((f) => {
-      f(m);
-    });
-  };
-  callbacks[id] = {};
-  // return {
-  //   position: sample(createStream(id, 'position', 3), periodic(10)),
-  // };
-  return sample(createStream(id, 'position', 3), periodic(10));
+
+
+function CheckPerformerId(id)
+{
+  if(typeof(id) === 'number')
+    return id == 1 ? "B" : (id == 2 ? "C" : "A");
+
+  if(typeof(id) === 'string')
+    return id == "b" ? "B" : (id == "c" ? "C" : "A");
+  
+  return id;
 }
 
-export const txosc = function()
+const host = 'ws://localhost:9090';
+const socket = new WebSocket(host);
+socket.onerror = () => {
+  // eslint-disable-next-line no-console
+  console.error('[unity] Error: the websocket server is unavailable at', host);
+};
+socket.onclose = () => {
+  // eslint-disable-next-line no-console
+  console.error('[unity] Error: lost connection with the websocket server');
+};
+socket.onmessage = (json) => {
+  const m = JSON.parse(json.data);
+  
+  Object.values(performers[m.id]).forEach((f) => {
+    f(m);
+  });
+};
+
+
+
+export const performer = function(id = 0) {
+
+  id = CheckPerformerId(id);
+  return {
+    pos:sample(createStream(id, 'pos', 3), periodic(10))
+  }
+}
+
+export const sendosc = function(message)
 {
-    console.log("txosc1");
-    return {};
+  message = {
+    type:"osc",
+    value1:12,
+    value2:13,
+    mode:0,
+  };
+  socket.send(JSON.stringify(message));
 }
 
 // export default {rxosc, txosc}

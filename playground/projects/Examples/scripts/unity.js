@@ -1,1 +1,1 @@
-sm=rxosc();
+sm=performer("A").pos.plot().tap(sendosc);
