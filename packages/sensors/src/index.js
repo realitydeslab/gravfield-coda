@@ -1,9 +1,11 @@
 import { Stream } from '@coda/prelude';
+import { withAttr } from '@coda/prelude';
 import leap_ from './leapmotion';
 import myo_ from './myo';
 import devicemotion_ from './devicemotion';
 import smartphone_ from './smartphone';
 import riot_ from './riot';
+import {rxosc as rxosc_, txosc as txosc_}from './unity';
 
 function streamifyFinger(f) {
   return {
@@ -90,5 +92,24 @@ export function riot(name) {
     magneto: new Stream(sm.magneto),
     quat: new Stream(sm.quat),
     euler: new Stream(sm.euler),
+  };
+}
+
+export function rxosc(name) {
+  const sm = rxosc_(name);
+  
+  // return new Stream(withAttr({
+  //   type: 'position',
+  //   format: 'vector',
+  //   size: 3,
+  // })([sm.position[0], sm.position[1], sm.position[2]]));
+  return new Stream(sm);
+}
+
+export function txosc(name) {
+  const sm = txosc_(name);
+  console.log("txosc2");
+  return {
+    
   };
 }
