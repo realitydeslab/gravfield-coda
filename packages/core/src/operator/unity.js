@@ -93,43 +93,53 @@ export function performer(id, source)
 ////////////////////////////////////
 //  Send osc message
 ////////////////////////////////////
-function sendMessageToWs(address)
+function sendMessageToWs(addressList)
 {
-    const message = {
-        type:"osc",
-        address:address,
-      };
-      
     return (value)=>{
-      //     console.log(address);
-      // console.log(value);
-      // console.log(value.constructor === Array);
-      message.value = value;
-      socket.send(JSON.stringify(message));
+      addressList.forEach(address => {
+        const message = {
+          type:"osc",
+          address:address,
+        };
+        message.value = value;
+        socket.send(JSON.stringify(message));
+      });
     };
 }
 
 export function oscto(id, param, source)
 {
-  id = CheckPerformerId(id);
-  if(id === undefined)
-    return source;
+  // id = CheckPerformerId(id);
+  // if(id === undefined)
+  //   return source;
 
-  const address = "/" + id + "-" + param; 
+  // const address = "/" + id + "-" + param; 
+  // const f = sendMessageToWs(address);
+  // return withAttr(source.attr)(most.tap(f, source));
+
+  const idList = parsePerfomerId(id);
+  if(idList === undefined || idList.length > 3){
+    return source;
+  }
+  const address = [];
+  for(let i=0; i<idList.length; i++)
+    {
+      address.push("/" + idList[i] + "-" + param);
+    }
   const f = sendMessageToWs(address);
   return withAttr(source.attr)(most.tap(f, source));
 }
 
 export function osctoall(param, source)
 {
-  const address = "/" + param; 
+  const address = ["/" + param]; 
   const f = sendMessageToWs(address);
   return withAttr(source.attr)(most.tap(f, source));
 }
 
 export function sendosc(param, source)
 {
-  address = "/"+param;
+  address = ["/"+param];
   const f = sendMessageToWs(address);
   return withAttr(source.attr)(most.tap(f, source));
 }
@@ -167,23 +177,6 @@ export function pfm_dist(id, source)
     format:'scalar',
     size: 1
   }
-  
-  // let output_count = idList.length == 3 ? 3 : 1;
-  // let attr = {}
-  // if(output_count == 0 || output_count == 1)
-  // {
-  //   attr  = {
-  //     format:'scalar',
-  //     size: 1
-  //   }
-  // }
-  // else
-  // {
-  //   attr  = {
-  //     format:'vector',
-  //     size: output_count
-  //   }
-  // }
   
   const f = (value)=>{
     let dis_total = 0;
