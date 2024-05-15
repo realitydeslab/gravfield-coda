@@ -194,6 +194,14 @@ const codaCompletions = {
   touchend: 'touchend(htmlNode)',
   touchmove: 'touchmove(htmlNode)',
   touchstart: 'touchstart (htmlNode)',
+
+  oscto:'oscto()',
+  osctoall:'osctoall()',
+  sendosc:'sendosc()',
+  performer:'performer()',
+  pfm_dist:"pfm_dist()",
+  pfm_miny:"pfm_miny()",
+  pfm_maxy:"pfm_maxy()",
 };
 
 export default function autocomplete(cm) {

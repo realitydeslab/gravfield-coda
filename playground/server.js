@@ -51,6 +51,8 @@ udpPort.on('message', (oscMsg) => {
     console.log('UDP Server Start Streaming on Port', udpPort.localPort);
     streaming = true;
   }
+
+  // Message Sample : "/performerB, 1.5,2.6,3.7"
   if(oscMsg.address.includes("/performer"))
   {
     // const performerId = oscMsg.address.split('/')[1];
@@ -59,7 +61,9 @@ udpPort.on('message', (oscMsg) => {
     message.pos[0] = oscMsg.args[0].value;
     message.pos[1] = oscMsg.args[1].value;
     message.pos[2] = oscMsg.args[2].value;
-    // console.log(message);
+
+    console.log(message);
+
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(message));
@@ -84,12 +88,14 @@ server.listen(port);
 const wss = new WebSocketServer({ server });
 const clients = {};
 
+const unityOscIp = "127.0.0.1";
+const unityOscPort = 13600;
+
 wss.on('connection', (ws) => {
   const thisSocket = ws;
   let thisId = null;
   thisSocket.isOperator = false;
   ws.on('message', (message) => {
-    console.log('onmessage', message);
     const m = JSON.parse(message);
     console.log(m.type);
     if (m.type === 'connect') {
@@ -120,50 +126,49 @@ wss.on('connection', (ws) => {
     }
     else if(m.type === 'osc')
     {
-      udpPort.send({
-        // address: "/type",
-        // args: [
-        //     {
-        //         type: "s",
-        //         value: "default"
-        //     },
-        //     {
-        //         type: "i",
-        //         value: m.value1
-        //     },
-        //     {
-        //       type: "i",
-        //       value: m.value2
-        //     },
-        //     {
-        //       type: "i",
-        //       value: m.mode
-        //     }
-        // ]
-        address: "/floatvalue1",
-        args: [
-          {
-            type: "f",
-            value: m.value1
+      if(m.value === undefined)
+        return;
+
+      let message = {
+        address:m.address,
+        args:[]
+      };
+
+      // Unity server can only accept Float or Vector3 value
+      let valid_format = true;
+      if(m.value.constructor === Array)
+      {
+        for(let i=0; i<3; i++)
+        {
+          message.args.push({
+            type:"f",
+            value: i < m.value.length ? m.value[i] : 0
+          });
         }
-          // {
-          //     type: "s",
-          //     value: "default"
-          // },
-          // {
-          //     type: "f",
-          //     value: m.value1
-          // },
-          // {
-          //   type: "f",
-          //   value: m.value2
-          // },
-          // {
-          //   type: "i",
-          //   value: m.mode
-          // }
-      ]
-    }, "127.0.0.1", 13600);
+      }
+      else if(typeof m.value === 'number')
+      {
+        message.args.push({
+          type:"f",
+          value: m.value
+        })
+      }
+      else
+      {
+        valid_format = false;
+      }
+
+      // Send message
+      if(valid_format)
+      {
+        try{
+          udpPort.send(message, unityOscIp, unityOscPort);
+          console.log("Send Message: " + message);
+        }
+        catch (e) {
+          console.log('Error when sending message: ', e.stack());
+        }
+      }
     }
   });
   ws.on('close', () => {

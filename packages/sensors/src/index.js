@@ -5,7 +5,7 @@ import myo_ from './myo';
 import devicemotion_ from './devicemotion';
 import smartphone_ from './smartphone';
 import riot_ from './riot';
-import {performer as performer_, sendosc as sendosc_}from './unity';
+// import {performer as performer_, sendosc as sendosc_}from './unity';
 
 function streamifyFinger(f) {
   return {
@@ -95,6 +95,7 @@ export function riot(name) {
   };
 }
 
+/*
 export function performer(name) {
 
 
@@ -121,3 +122,4 @@ export function performer(name) {
 export const sendosc = (address, stream) => 
   new Stream(sendosc_(address, stream));
 
+*/

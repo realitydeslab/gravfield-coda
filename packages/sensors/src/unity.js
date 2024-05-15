@@ -59,7 +59,7 @@ function createStream(id, channel, size) {
   };
 }
 
-
+/*
 
 function CheckPerformerId(id)
 {
@@ -116,5 +116,4 @@ console.log(source.value.construtor === Array);
   return source;
 }
 
-// export default {rxosc, txosc}
-// module.exports = {rxosc, txosc}
+*/

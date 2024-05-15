@@ -21,3 +21,38 @@ const process = periodic(1000)
 .sendosc2("/test")
 
 clear()
+
+
+const sm = periodic(10)
+.constant(1)
+.accum()
+// .tap(log)
+.performer(0)
+.plot()
+.pfm_dist("AC")
+.plot();
+
+
+const sm1 = periodic(10)
+.constant(1)
+.accum()
+.performer("A")
+.plot()
+.pfm_maxy("A")
+.plot()
+.scale({ outmin: 0, outmax: 1 })
+.oscto("A", "drag");
+
+
+
+const sm2 = periodic(10)
+.constant(1)
+.accum()
+// .tap(log)
+.performer(0)
+.plot()
+.pfm_maxy("ABC")
+.tap(log)
+
+
+stop(sm2)

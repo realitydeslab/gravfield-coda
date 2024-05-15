@@ -28,7 +28,7 @@ import line_ from './operator/line';
 import lineto_ from './operator/lineto';
 import adsr_ from './operator/adsr';
 
-import * as unity from './operator/unity2';
+import * as unity from './operator/unity';
 
 export const accum = stream => (
   new Stream(accum_(stream))
@@ -190,8 +190,35 @@ export const adsr = (options, stream) => (
   new Stream(adsr_(options, stream))
 );
 
+////////////////////////////////////
+//
+//  Unity / OSC
+//
+////////////////////////////////////
+export const oscto = (id, param, stream) => (
+  new Stream(unity.oscto(id, param, stream))
+);
 
+export const osctoall = (param, stream) => (
+  new Stream(unity.osctoall(param, stream))
+);
 
-export const sendosc2 = (address, stream) => (
-  new Stream(unity.sendosc2(address, stream))
+export const sendosc = (param, stream) => (
+  new Stream(unity.sendosc(param, stream))
+);
+
+export const performer = (id, stream) => (
+  new Stream(unity.performer(id, stream))
+);
+
+export const pfm_dist = (id, stream) => (
+  new Stream(unity.pfm_dist(id, stream))
+);
+
+export const pfm_miny = (id, stream) => (
+  new Stream(unity.pfm_miny(id, stream))
+);
+
+export const pfm_maxy = (id, stream) => (
+  new Stream(unity.pfm_maxy(id, stream))
 );

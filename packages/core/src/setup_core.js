@@ -38,7 +38,7 @@ import intensity from './operator/intensity';
 import lineto from './operator/lineto';
 import adsr from './operator/adsr';
 
-import {sendosc2} from './operator/unity2';
+import * as unity from './operator/unity';
 
 export default function setupCore(Stream) {
   const s = Stream;
@@ -378,8 +378,34 @@ export default function setupCore(Stream) {
     return new Stream(adsr(options, this));
   };
 
+  ////////////////////////////////////
+  //
+  //  Unity / OSC
+  //
+  ////////////////////////////////////
+  s.prototype.oscto = function oscto_(id, param) {
+    return new Stream(unity.oscto(id, param, this));
+  };
+  s.prototype.osctoall = function osctoall_(param) {
+    return new Stream(unity.osctoall(param, this));
+  };
+  s.prototype.sendosc = function sendosc_(param) {
+    return new Stream(unity.sendosc(param, this));
+  };
 
-  s.prototype.sendosc2 = function sendosc2_(address) {
-    return new Stream(sendosc2(address, this));
+  s.prototype.performer = function performer_(id) {
+    return new Stream(unity.performer(id, this));
+  };
+
+  s.prototype.pfm_dist = function pfm_dist_(id) {
+    return new Stream(unity.pfm_dist(id, this));
+  };
+
+  s.prototype.pfm_miny = function pfm_miny_(id) {
+    return new Stream(unity.pfm_miny(id, this));
+  };
+
+  s.prototype.pfm_maxy = function pfm_maxy_(id) {
+    return new Stream(unity.pfm_maxy(id, this));
   };
 }
