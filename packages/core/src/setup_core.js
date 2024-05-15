@@ -38,6 +38,8 @@ import intensity from './operator/intensity';
 import lineto from './operator/lineto';
 import adsr from './operator/adsr';
 
+import {sendosc2} from './operator/unity2';
+
 export default function setupCore(Stream) {
   const s = Stream;
   /**
@@ -374,5 +376,10 @@ export default function setupCore(Stream) {
    */
   s.prototype.adsr = function adsr_(options) {
     return new Stream(adsr(options, this));
+  };
+
+
+  s.prototype.sendosc2 = function sendosc2_(address) {
+    return new Stream(sendosc2(address, this));
   };
 }

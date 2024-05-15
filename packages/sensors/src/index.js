@@ -96,6 +96,8 @@ export function riot(name) {
 }
 
 export function performer(name) {
+
+
   const sm = performer_(name);
   
   // return new Stream(withAttr({
@@ -108,6 +110,14 @@ export function performer(name) {
   };
 }
 
-export function sendosc(msg) {
-  const sm = sendosc_(msg);
-}
+// export function sendosc(msg) {
+//   const sm = sendosc_(msg);
+// }
+
+// export function sendosc(address, stream){
+//   new Stream(sendosc_(address, stream));
+// }
+
+export const sendosc = (address, stream) => 
+  new Stream(sendosc_(address, stream));
+

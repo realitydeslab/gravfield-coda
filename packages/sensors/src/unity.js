@@ -72,7 +72,7 @@ function CheckPerformerId(id)
   return id;
 }
 
-const host = 'ws://localhost:9090';
+const host = 'ws://localhost:19090';
 const socket = new WebSocket(host);
 socket.onerror = () => {
   // eslint-disable-next-line no-console
@@ -100,15 +100,20 @@ export const performer = function(id = 0) {
   }
 }
 
-export const sendosc = function(message)
+export const sendosc = function(address, source)
 {
   message = {
     type:"osc",
-    value1:12,
-    value2:13,
-    mode:0,
+    address:address,
+    value:source.value,
   };
+console.log(address);
+console.log(source.value);
+console.log(source.values);
+console.log(source.value.construtor === Array);
+
   socket.send(JSON.stringify(message));
+  return source;
 }
 
 // export default {rxosc, txosc}

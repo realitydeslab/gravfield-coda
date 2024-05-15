@@ -28,6 +28,8 @@ import line_ from './operator/line';
 import lineto_ from './operator/lineto';
 import adsr_ from './operator/adsr';
 
+import * as unity from './operator/unity2';
+
 export const accum = stream => (
   new Stream(accum_(stream))
 );
@@ -186,4 +188,10 @@ export const lineto = (options, stream) => (
 
 export const adsr = (options, stream) => (
   new Stream(adsr_(options, stream))
+);
+
+
+
+export const sendosc2 = (address, stream) => (
+  new Stream(unity.sendosc2(address, stream))
 );

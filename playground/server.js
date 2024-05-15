@@ -121,25 +121,48 @@ wss.on('connection', (ws) => {
     else if(m.type === 'osc')
     {
       udpPort.send({
-        address: "/type",
+        // address: "/type",
+        // args: [
+        //     {
+        //         type: "s",
+        //         value: "default"
+        //     },
+        //     {
+        //         type: "i",
+        //         value: m.value1
+        //     },
+        //     {
+        //       type: "i",
+        //       value: m.value2
+        //     },
+        //     {
+        //       type: "i",
+        //       value: m.mode
+        //     }
+        // ]
+        address: "/floatvalue1",
         args: [
-            {
-                type: "s",
-                value: "default"
-            },
-            {
-                type: "i",
-                value: m.value1
-            },
-            {
-              type: "i",
-              value: m.value2
-            },
-            {
-              type: "i",
-              value: m.mode
-            }
-        ]
+          {
+            type: "f",
+            value: m.value1
+        }
+          // {
+          //     type: "s",
+          //     value: "default"
+          // },
+          // {
+          //     type: "f",
+          //     value: m.value1
+          // },
+          // {
+          //   type: "f",
+          //   value: m.value2
+          // },
+          // {
+          //   type: "i",
+          //   value: m.mode
+          // }
+      ]
     }, "127.0.0.1", 13600);
     }
   });
