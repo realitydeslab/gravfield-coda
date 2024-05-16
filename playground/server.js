@@ -97,7 +97,6 @@ wss.on('connection', (ws) => {
   thisSocket.isOperator = false;
   ws.on('message', (message) => {
     const m = JSON.parse(message);
-    console.log(m.type);
     if (m.type === 'connect') {
       try {
         if (thisId) delete clients[thisId];

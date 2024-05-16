@@ -5,15 +5,39 @@ import * as most from '@most/core';
 //  Websocket opens constantly
 ////////////////////////////////////
 const host = 'ws://localhost:9090';
-const socket = new WebSocket(host);
-socket.onerror = () => {
-  // eslint-disable-next-line no-console
-  console.error('[unity] Error: the websocket server is unavailable at', host);
-};
-socket.onclose = () => {
-  // eslint-disable-next-line no-console
-  console.error('[unity] Error: lost connection with the websocket server');
-};
+var socket;
+
+function CreateWebSocket()
+{
+  socket = new WebSocket(host);
+
+  socket.onopen = ()=>{
+    // eslint-disable-next-line no-console
+    console.log('[unity] the websocket server starts at', host);
+  }
+  socket.onclose = () => {
+    // eslint-disable-next-line no-console
+    console.error('[unity] Error: lost connection with the websocket server');
+  };
+  socket.onerror = () => {
+    // eslint-disable-next-line no-console
+    console.error('[unity] Error: the websocket server is unavailable at', host);
+    socket.close();
+  };
+}
+
+CreateWebSocket();
+
+
+function CheckWsState()
+{
+  if(socket.readyState === WebSocket.CLOSED || socket.readyState === WebSocket.CLOSING){
+    try{
+      CreateWebSocket();
+    }
+    catch(e){}
+  }
+}
 
 // Need a start Function
 
@@ -103,7 +127,9 @@ function sendMessageToWs(addressList)
         };
         message.value = value;
         try{
-          socket.send(JSON.stringify(message));
+          if(socket.readyState === WebSocket.OPEN){
+            socket.send(JSON.stringify(message));
+          }
         }catch (e) {
           console.log('Error when sending through WebSocket: ', e.stack());
         }
@@ -120,6 +146,11 @@ export function oscto(id, param, source)
   // const address = "/" + id + "-" + param; 
   // const f = sendMessageToWs(address);
   // return withAttr(source.attr)(most.tap(f, source));
+  // if(CheckWsState() == false){
+  //   console.log("Websocket is disconnected.");
+  //   return source;
+  // }
+  CheckWsState();
 
   const idList = parsePerfomerId(id);
   if(idList === undefined || idList.length > 3){
@@ -136,6 +167,8 @@ export function oscto(id, param, source)
 
 export function osctoall(param, source)
 {
+  CheckWsState();
+
   const address = ["/" + param]; 
   const f = sendMessageToWs(address);
   return withAttr(source.attr)(most.tap(f, source));
@@ -143,6 +176,8 @@ export function osctoall(param, source)
 
 export function sendosc(param, source)
 {
+  CheckWsState();
+
   address = ["/"+param];
   const f = sendMessageToWs(address);
   return withAttr(source.attr)(most.tap(f, source));
