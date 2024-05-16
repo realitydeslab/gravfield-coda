@@ -163,10 +163,10 @@ wss.on('connection', (ws) => {
       {
         try{
           udpPort.send(message, unityOscIp, unityOscPort);
-          console.log("Send Message: " + message);
+          console.log("Send Message: " + JSON.stringify(message));
         }
         catch (e) {
-          console.log('Error when sending message: ', e.stack());
+          console.log('Error when sending UDP message: ', e.stack());
         }
       }
     }

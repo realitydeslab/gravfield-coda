@@ -102,7 +102,11 @@ function sendMessageToWs(addressList)
           address:address,
         };
         message.value = value;
-        socket.send(JSON.stringify(message));
+        try{
+          socket.send(JSON.stringify(message));
+        }catch (e) {
+          console.log('Error when sending through WebSocket: ', e.stack());
+        }
       });
     };
 }
