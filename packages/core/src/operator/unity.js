@@ -24,6 +24,9 @@ function CreateWebSocket()
     console.error('[unity] Error: the websocket server is unavailable at', host);
     socket.close();
   };
+  socket.onmessage = (json) => {
+    OnReceiveSocketMessage(json);
+  };
 }
 
 CreateWebSocket();
@@ -44,14 +47,13 @@ function CheckWsState()
 ////////////////////////////////////
 //  when receive osc message, alter performer data model
 ////////////////////////////////////
-socket.onmessage = (json) => {
+function OnReceiveSocketMessage(json)
+{
   const m = JSON.parse(json.data);  
   performers[m.id].pos = m.pos;
+}
 
-  // Object.values(performers[m.id]).forEach((f) => {
-  //   f = m.pos
-  // });
-};
+
 
 
 ////////////////////////////////////
@@ -97,6 +99,8 @@ function replaceWithPerformerPos(id)
 
 export function performer(id, source) 
 {
+  CheckWsState();
+
   id = CheckPerformerId(id);
   if(id === undefined)
   {
