@@ -141,49 +141,38 @@ function sendMessageToWs(addressList)
     };
 }
 
-export function oscto(id, param, source)
+export function oscto(id, address, source)
 {
-  // id = CheckPerformerId(id);
-  // if(id === undefined)
-  //   return source;
-
-  // const address = "/" + id + "-" + param; 
-  // const f = sendMessageToWs(address);
-  // return withAttr(source.attr)(most.tap(f, source));
-  // if(CheckWsState() == false){
-  //   console.log("Websocket is disconnected.");
-  //   return source;
-  // }
   CheckWsState();
 
   const idList = parsePerfomerId(id);
   if(idList === undefined || idList.length > 3){
     return source;
   }
-  const address = [];
+  const final_address = [];
   for(let i=0; i<idList.length; i++)
     {
-      address.push("/" + idList[i] + "-" + param);
+      final_address.push("/" + idList[i] + "-" + address);
     }
-  const f = sendMessageToWs(address);
+  const f = sendMessageToWs(final_address);
   return withAttr(source.attr)(most.tap(f, source));
 }
 
-export function osctoall(param, source)
+export function osctoall(address, source)
 {
   CheckWsState();
 
-  const address = ["/" + param]; 
-  const f = sendMessageToWs(address);
+  const final_address = ["/" + address]; 
+  const f = sendMessageToWs(final_address);
   return withAttr(source.attr)(most.tap(f, source));
 }
 
-export function sendosc(param, source)
+export function sendosc(adress, source)
 {
   CheckWsState();
 
-  address = ["/"+param];
-  const f = sendMessageToWs(address);
+  const final_address = ["/"+adress];
+  const f = sendMessageToWs(final_address);
   return withAttr(source.attr)(most.tap(f, source));
 }
 
