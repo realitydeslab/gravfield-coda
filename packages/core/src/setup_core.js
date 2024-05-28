@@ -389,8 +389,8 @@ export default function setupCore(Stream) {
   s.prototype.osctoall = function osctoall_(param) {
     return new Stream(unity.osctoall(param, this));
   };
-  s.prototype.sendosc = function sendosc_(param) {
-    return new Stream(unity.sendosc(param, this));
+  s.prototype.sendmsg = function sengmsg_(options) {
+    return new Stream(unity.sendmsg(options, this));
   };
 
   s.prototype.performer = function performer_(id) {

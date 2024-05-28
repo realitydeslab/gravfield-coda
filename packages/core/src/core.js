@@ -203,7 +203,7 @@ export const osctoall = (param, stream) => (
   new Stream(unity.osctoall(param, stream))
 );
 
-export const sendosc = (param, stream) => (
+export const sendmsg = (options = {}, stream) => (
   new Stream(unity.sendosc(param, stream))
 );
 

@@ -121,6 +121,47 @@ export function performer(id, source)
 ////////////////////////////////////
 //  Send osc message
 ////////////////////////////////////
+function parseMessageAddress(address)
+{
+  // if(address === undefined || typeof address !== "string" || address.length == 0)
+  //   return undefined;
+
+  // address = address.toLowerCase();
+  // if(address.indexOf("-") != -1)
+  //   {
+  //     const arr = address.split("-");
+  //     let effect_type = arr[0];
+  //     let command = arr[1];
+
+  //   }
+  //   else
+  // {
+  //   return 
+  // }
+  // if(address.indexOf("performer") != -1)
+  // {
+    
+  // }
+}
+
+function parseOptions(options)
+{
+  // options command,
+let final_address = [];
+  if(options.id !== undefined)
+  {
+    const idList = parsePerfomerId(options.id);
+    idList.forEach(id => {
+      const split_str = options.address.split("-");
+      final_address.push( split_str[0]+ id + "-"+split_str[1]);
+    });
+  }
+  else
+  {
+    final_address.push(options.address);
+  }
+  return final_address;
+}
 function sendMessageToWs(addressList)
 {
     return (value)=>{
@@ -152,7 +193,13 @@ export function oscto(id, address, source)
   const final_address = [];
   for(let i=0; i<idList.length; i++)
     {
-      final_address.push("/" + idList[i] + "-" + address);
+      if(address.indexOf("-") != -1){
+        const split_str = address.split("-");
+        final_address.push("/"+split_str[0]+ idList[i] + "-"+split_str[1]);
+      }
+      else{
+        final_address.push("/" + address + idList[i]);
+      }
     }
   const f = sendMessageToWs(final_address);
   return withAttr(source.attr)(most.tap(f, source));
@@ -167,11 +214,16 @@ export function osctoall(address, source)
   return withAttr(source.attr)(most.tap(f, source));
 }
 
-export function sendosc(adress, source)
+export function sendmsg(options = {}, source)
 {
   CheckWsState();
 
-  const final_address = ["/"+adress];
+  if(options.address === undefined)
+    return source;
+
+
+
+  const final_address = parseOptions(options);
   const f = sendMessageToWs(final_address);
   return withAttr(source.attr)(most.tap(f, source));
 }
@@ -189,10 +241,13 @@ function parsePerfomerId(id)
   id = id.toUpperCase();
   let idList = [];
   for (let i = 0; i < id.length; i++) {
-    if(id[i] == "A" || id[i] == "B" || id[i] == "C")
+    if(id[i] == 0 || id[i] == 1 || id[i] == 2)
     {
       idList.push(id[i]);
     }
+    else if (id[i] == "A")idList.push(0);
+    else if (id[i] == "B")idList.push(1);
+    else if (id[i] == "C")idList.push(2);
   }
 
   return idList.length > 0 ? idList : undefined;
