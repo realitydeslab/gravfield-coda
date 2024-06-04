@@ -1,30 +1,53 @@
-sm=performer("A").pos.plot().tap(sendosc);
+// Change Mode
+const modesm = now(2)
+.osctoall("mode");
+
+////////////////////////////////////////////////
+// Rope
+const sm_rope = mousemove(doc)
+.resample(periodic(10))
+.mvavrg({ size: 5 })
+.select(0)
+.scale({ inmin:0, inmax:1, outmin: 1, outmax: 10 })
+.plot({ legend: 'Mouse Position'})
+.oscto("012", "rope-scaler");
+
+// .oscto("012", "rope-mass");
+// .oscto("012", "rope-maxwidth");
+// .oscto("012", "rope-scaler");
+
+stop(sm_rope);
 
 
-a = mousemove(doc)
-  .resample(periodic(10))
-  .mvavrg({ size: 5 })
-  .plot({ legend: 'Mouse Position'})
-  .delta({ size: 5 })
-  .plot({ legend: 'Mouse velocity' })
-  .delta({ size: 5 })
-  .plot({ legend: 'Mouse acceleration' })
-  .sendosc2("/test");
+////////////////////////////////////////////////
+// Spring
+const sm_spring = mousemove(doc)
+.resample(periodic(10))
+.mvavrg({ size: 5 })
+.select(0)
+.scale({ inmin:0, inmax:2, outmin: 0, outmax: 100 })
+.plot({ legend: 'Mouse Position'});
 
+// .oscto("012", "spring-freq");
+// .oscto("012", "spring-width");
 
-  // generate a constant unit signal sampled at 1Hz, and accumulate
-// the results (sliced at 10 iterations)
-const process = periodic(1000)
+stop(sm_spring);
+
+////////////////////////////////////////////////
+// Magnetic
+const sm_mag = periodic(1000)
 .constant(1)
-.accum()
-.tap(log)
-.sendosc2("/test")
+.map(v=>Math.floor(Math.random() * 3));
+
+//.oscto("ABC", "mag")
+
+//.osctoall("magrandom")
 
 
 
 
-
-// 前菜
+////////////////////////////////////////////////
+// Reference
 // 鼠标位置越靠右，线条越粗
 const sm1 = mousemove(doc)
 .resample(periodic(10))
@@ -76,7 +99,6 @@ stop(sm4);
 const sm5 = periodic(1000)
 .constant(1)
 .osctoall("meshsize")
-
 stop(sm5);
 
 // 辅助Reset
@@ -84,3 +106,28 @@ const clearsm = now(3)
 .oscto("ABC", "thickness");
 
 clear();
+
+
+
+sm=performer("A").pos.plot().tap(sendosc);
+
+
+a = mousemove(doc)
+  .resample(periodic(10))
+  .mvavrg({ size: 5 })
+  .plot({ legend: 'Mouse Position'})
+  .delta({ size: 5 })
+  .plot({ legend: 'Mouse velocity' })
+  .delta({ size: 5 })
+  .plot({ legend: 'Mouse acceleration' })
+  .sendosc2("/test");
+
+
+  // generate a constant unit signal sampled at 1Hz, and accumulate
+// the results (sliced at 10 iterations)
+const process = periodic(1000)
+.constant(1)
+.accum()
+.tap(log)
+.sendosc2("/test")
+
